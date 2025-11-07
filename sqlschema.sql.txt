@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS chips (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  provider_id VARCHAR(64) NOT NULL,
+  msisdn VARCHAR(32) UNIQUE NOT NULL,
+  status ENUM('new','warming','ready','failed') DEFAULT 'new',
+  meta JSON NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS warmups (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  chip_id BIGINT NOT NULL,
+  step VARCHAR(64) NOT NULL,
+  status ENUM('queued','running','done','error') DEFAULT 'queued',
+  detail TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (chip_id) REFERENCES chips(id)
+);
+
+CREATE TABLE IF NOT EXISTS logs (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  level ENUM('INFO','WARN','ERROR') NOT NULL,
+  source VARCHAR(64) NOT NULL,
+  message TEXT NOT NULL,
+  payload JSON NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
